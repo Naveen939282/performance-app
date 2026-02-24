@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Student Marks Management System{% endblock %}
+
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-cog me-2"></i>System Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <div class="mb-4">
+                        <label for="threshold" class="form-label">
+                            <strong>Weak Student Threshold (%)</strong>
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="threshold" name="threshold" 
+                                   value="{{ threshold }}" min="0" max="100" step="1" required>
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted">
+                            Students with average below this threshold will be marked as "weak" or "needs improvement".
+                        </small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Performance Categories</h6>
+                        <ul class="mb-0">
+                            <li><strong>Excellent:</strong> 75% and above</li>
+                            <li><strong>Good:</strong> 60% - 74%</li>
+                            <li><strong>Average:</strong> 45% - 59%</li>
+                            <li><strong>Needs Improvement:</strong> Below {{ threshold }}%</li>
+                        </ul>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save me-2"></i>Save Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Database Info -->
+        <div class="card mt-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-database me-2"></i>Database Information</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><strong>Database Type:</strong> SQLite</p>
+                <p class="mb-2"><strong>Database File:</strong> marks.db</p>
+                <p class="mb-0"><small class="text-muted">The database file is automatically created in the application directory.</small></p>
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="card mt-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-link me-2"></i>Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('reports') }}" class="btn btn-outline-success">
+                        <i class="fas fa-chart-bar me-2"></i>View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

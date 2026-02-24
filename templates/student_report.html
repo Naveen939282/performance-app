@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Student Report - {{ report.student.name }}{% endblock %}
+
+{% block page_title %}Student Performance Report{% endblock %}
+
+{% block content %}
+<!-- Student Info Card -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h4><i class="fas fa-user-graduate me-2"></i>{{ report.student.name }}</h4>
+                <p class="mb-1"><strong>Roll Number:</strong> {{ report.student.roll_number }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ report.student.email or 'N/A' }}</p>
+                <p class="mb-0"><strong>Class:</strong> {{ report.student.class_name or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="mb-2">
+                    <span class="performance-badge performance-{{ report.performance.lower().replace(' ', '-') }}">
+                        {{ report.performance }}
+                    </span>
+                </div>
+                <h2 class="mb-0">{{ report.average }}%</h2>
+                <p class="text-muted">Overall Average</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3>{{ report.total_subjects }}</h3>
+                <p class="mb-0 text-muted">Subjects</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card success">
+            <div class="card-body text-center">
+                <h3>{{ report.total_marks }}</h3>
+                <p class="mb-0 text-muted">Total Marks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card warning">
+            <div class="card-body text-center">
+                <h3>{{ report.strong_subjects|length }}</h3>
+                <p class="mb-0 text-muted">Passing</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card danger">
+            <div class="card-body text-center">
+                <h3>{{ report.weak_subjects|length }}</h3>
+                <p class="mb-0 text-muted">Needs Improvement</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Marks Table -->
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Subject-wise Marks</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Code</th>
+                        <th>Marks</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in report.marks %}
+                    <tr>
+                        <td>{{ mark.subject_name }}</td>
+                        <td><span class="badge bg-secondary">{{ mark.subject_code }}</span></td>
+                        <td>
+                            <strong>{{ mark.marks }}</strong>
+                        </td>
+                        <td>
+                            {% if mark.marks >= 60 %}
+                                <span class="badge bg-success">Excellent</span>
+                            {% elif mark.marks >= 45 %}
+                                <span class="badge bg-info">Good</span>
+                            {% elif mark.marks >= 35 %}
+                                <span class="badge bg-warning">Pass</span>
+                            {% else %}
+                                <span class="badge bg-danger">Fail</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Weak Subjects Alert -->
+{% if report.weak_subjects %}
+<div class="card border-danger mb-4">
+    <div class="card-header bg-white text-danger">
+        <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Subjects Needing Improvement</h5>
+    </div>
+    <div class="card-body">
+        <p>The student needs improvement in the following subjects (below {{ report.threshold }}%):</p>
+        <div class="row">
+            {% for mark in report.weak_subjects %}
+            <div class="col-md-4 mb-2">
+                <div class="card bg-light">
+                    <div class="card-body py-2">
+                        <strong>{{ mark.subject_name }}</strong>
+                        <span class="badge bg-danger float-end">{{ mark.marks }}%</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Back Button -->
+<div class="text-center">
+    <a href="{{ url_for('reports') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Reports
+    </a>
+</div>
+{% endblock %}

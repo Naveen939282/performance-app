@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Subject Report - {{ subject.name }}{% endblock %}
+
+{% block page_title %}Subject Performance Report{% endblock %}
+
+{% block content %}
+<!-- Subject Info Card -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h4><i class="fas fa-book me-2"></i>{{ subject.name }}</h4>
+                <p class="mb-1"><strong>Subject Code:</strong> <span class="badge bg-secondary">{{ subject.code }}</span></p>
+                <p class="mb-0"><strong>Credits:</strong> {{ subject.credits }}</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h2 class="mb-0">{{ average }}%</h2>
+                <p class="text-muted">Class Average</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Row -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3>{{ marks|length }}</h3>
+                <p class="mb-0 text-muted">Students</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card success">
+            <div class="card-body text-center">
+                {% set highest = marks|max(attribute='marks') if marks else none %}
+                <h3>{{ highest.marks if highest else 'N/A' }}</h3>
+                <p class="mb-0 text-muted">Highest Marks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card danger">
+            <div class="card-body text-center">
+                {% set lowest = marks|min(attribute='marks') if marks else none %}
+                <h3>{{ lowest.marks if lowest else 'N/A' }}</h3>
+                <p class="mb-0 text-muted">Lowest Marks</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Marks Table -->
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-users me-2"></i>Student Performance in {{ subject.name }}</h5>
+    </div>
+    <div class="card-body">
+        {% if marks %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Marks</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in marks|sort(attribute='marks', reverse=true) %}
+                    <tr>
+                        <td>{{ mark.student_name }}</td>
+                        <td>{{ mark.roll_number }}</td>
+                        <td>
+                            <strong>{{ mark.marks }}</strong>
+                        </td>
+                        <td>
+                            {% if mark.marks >= 60 %}
+                                <span class="badge bg-success">Excellent</span>
+                            {% elif mark.marks >= 45 %}
+                                <span class="badge bg-info">Good</span>
+                            {% elif mark.marks >= 35 %}
+                                <span class="badge bg-warning">Pass</span>
+                            {% else %}
+                                <span class="badge bg-danger">Fail</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-info-circle fa-3x text-muted"></i>
+            <p class="mt-2 text-muted">No marks entered for this subject yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="text-center">
+    <a href="{{ url_for('reports') }}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Reports
+    </a>
+</div>
+{% endblock %}

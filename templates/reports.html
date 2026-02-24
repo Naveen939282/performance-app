@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Student Marks Management System{% endblock %}
+
+{% block page_title %}Performance Reports{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Weak Students Section -->
+    <div class="col-md-6 mb-4">
+        <div class="card border-danger">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Students Needing Attention
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if weak_students %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll No</th>
+                                <th>Average</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in weak_students %}
+                            <tr>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.roll_number }}</td>
+                                <td><span class="badge bg-danger">{{ "%.2f"|format(student.average) }}%</span></td>
+                                <td>
+                                    <a href="{{ url_for('student_report', student_id=student.id) }}" class="btn btn-sm btn-outline-danger">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                    <p class="mt-2 text-muted">No weak students found!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Performers Section -->
+    <div class="col-md-6 mb-4">
+        <div class="card border-success">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-success">
+                    <i class="fas fa-trophy me-2"></i>Top Performers
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if top_performers %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Roll No</th>
+                                <th>Average</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in top_performers %}
+                            <tr>
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <i class="fas fa-medal text-warning"></i>
+                                    {% elif loop.index == 2 %}
+                                        <i class="fas fa-medal text-secondary"></i>
+                                    {% elif loop.index == 3 %}
+                                        <i class="fas fa-medal" style="color: #cd7f32;"></i>
+                                    {% else %}
+                                        {{ loop.index }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.roll_number }}</td>
+                                <td><span class="badge bg-success">{{ "%.2f"|format(student.average) }}%</span></td>
+                                <td>
+                                    <a href="{{ url_for('student_report', student_id=student.id) }}" class="btn btn-sm btn-outline-success">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-info-circle fa-3x text-muted"></i>
+                    <p class="mt-2 text-muted">No data available yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subject Performance Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Subject Performance Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if subject_performance %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Code</th>
+                                <th>Average</th>
+                                <th>Highest</th>
+                                <th>Lowest</th>
+                                <th>Entries</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subject_performance %}
+                            <tr>
+                                <td>{{ subject.name }}</td>
+                                <td><span class="badge bg-secondary">{{ subject.code }}</span></td>
+                                <td>
+                                    {% if subject.average and subject.average >= 60 %}
+                                        <span class="badge bg-success">{{ "%.2f"|format(subject.average) }}%</span>
+                                    {% elif subject.average and subject.average >= 35 %}
+                                        <span class="badge bg-warning">{{ "%.2f"|format(subject.average) }}%</span>
+                                    {% elif subject.average %}
+                                        <span class="badge bg-danger">{{ "%.2f"|format(subject.average) }}%</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ "%.1f"|format(subject.max_marks) if subject.max_marks else 'N/A' }}</td>
+                                <td>{{ "%.1f"|format(subject.min_marks) if subject.min_marks else 'N/A' }}</td>
+                                <td>{{ subject.total_entries }}</td>
+                                <td>
+                                    <a href="{{ url_for('subject_report', subject_id=subject.id) }}" class="btn btn-sm btn-outline-primary">
+                                        Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+                    <p class="text-muted">No subject performance data available yet.</p>
+                    <p>Add subjects and enter marks to see performance analysis.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

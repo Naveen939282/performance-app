@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Marks Entry - Student Marks Management System{% endblock %}
+
+{% block page_title %}Marks Entry{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Add Marks Form -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-pen me-2"></i>Enter Marks</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_marks') }}">
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Student *</label>
+                        <select class="form-select" id="student_id" name="student_id" required>
+                            <option value="">Select Student</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.name }} ({{ student.roll_number }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject_id" class="form-label">Subject *</label>
+                        <select class="form-select" id="subject_id" name="subject_id" required>
+                            <option value="">Select Subject</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.code }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="marks" class="form-label">Marks *</label>
+                        <input type="number" class="form-control" id="marks" name="marks" min="0" max="100" step="0.01" placeholder="Enter marks (0-100)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exam_type" class="form-label">Exam Type *</label>
+                        <select class="form-select" id="exam_type" name="exam_type" required>
+                            <option value="Internal">Internal Exam</option>
+                            <option value="Midterm">Midterm</option>
+                            <option value="Final">Final Exam</option>
+                            <option value="Assignment">Assignment</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exam_date" class="form-label">Exam Date</label>
+                        <input type="date" class="form-control" id="exam_date" name="exam_date">
+                    </div>
+                    <button type="submit" class="btn btn-info w-100">
+                        <i class="fas fa-save me-2"></i>Save Marks
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Marks List -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>All Marks</h5>
+                <span class="badge bg-info">{{ marks|length }} Entries</span>
+            </div>
+            <div class="card-body">
+                {% if marks %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Roll No</th>
+                                <th>Subject</th>
+                                <th>Marks</th>
+                                <th>Exam Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mark in marks %}
+                            <tr>
+                                <td>{{ mark.student_name }}</td>
+                                <td>{{ mark.roll_number }}</td>
+                                <td>{{ mark.subject_name }}</td>
+                                <td>
+                                    {% if mark.marks >= 60 %}
+                                        <span class="badge bg-success">{{ mark.marks }}</span>
+                                    {% elif mark.marks >= 35 %}
+                                        <span class="badge bg-warning">{{ mark.marks }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ mark.marks }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ mark.exam_type }}</td>
+                                <td>{{ mark.exam_date or 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                    <p class="text-muted">No marks entered yet.</p>
+                    <p>Use the form to enter marks!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not students or not subjects %}
+<div class="alert alert-warning mt-3">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {% if not students and not subjects %}
+        Please add both students and subjects before entering marks.
+    {% elif not students %}
+        Please add students before entering marks.
+    {% else %}
+        Please add subjects before entering marks.
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
